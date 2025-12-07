@@ -1,6 +1,5 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd cloud_microservice && pip install -r requirements.txt"
 
 [deploy]
 startCommand = "cd cloud_microservice && gunicorn app:app"
