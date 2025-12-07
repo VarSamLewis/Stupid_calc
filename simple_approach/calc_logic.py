@@ -7,12 +7,12 @@ class CalculatorLogic:
     def sanitise_input(self, expression):
         """Sanitise inputs"""
 
-        allowed_chars = set('0123456789+-*/')
+        allowed_chars = set('0123456789+-*/. ')
 
         if all(char in allowed_chars for char in expression):
             return expression
-        else: 
-            return ValueError("Invalid characters in input")
+        else:
+            raise ValueError("Invalid characters in input")
 
     def evaluate(self, expression):
         """

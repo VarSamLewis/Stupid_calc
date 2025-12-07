@@ -9,12 +9,12 @@ CORS(app)
 def sanitise_input(expression):
     """Sanitise inputs"""
 
-    allowed_chars = set('0123456789+-*/')
+    allowed_chars = set('0123456789+-*/. ')
 
     if all(char in allowed_chars for char in expression):
         return expression
     else:
-        return ValueError("Invalid characters in input")
+        raise ValueError("Invalid characters in input")
     
 def evaluate(expression):
     """Evaluate a mathematical expression"""

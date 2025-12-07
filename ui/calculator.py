@@ -51,6 +51,29 @@ class Calculator:
 
         logger.info("Calculator initialized successfully")
 
+
+    def get_output(self, expression, method = 1):
+        if method == 1:
+            try:
+                output = self.calc_logic.evaluate(expression)
+            except Exception as e:
+                logger.error(f"Error calling local logic: {e}")
+                output = "ERROR"
+            return output
+        elif method == 2:
+            try:
+                logger.debug(f"Sending request to {RAILWAY_URL}/calculate")
+                response = requests.post(f"{RAILWAY_URL}/calculate",
+                                     json={"expression": expression})
+                logger.debug(f"Response status code: {response.status_code}")
+                result = response.json()["result"]
+                logger.info(f"Cloud result: {result}")
+            except Exception as e:
+                logger.error(f"Error calling cloud microservice: {e}")
+                result = "ERROR"
+            return result
+
+    
     def on_button_click(self, button):
         """Handle button clicks"""
         logger.debug(f"Button clicked: {button}")
@@ -62,22 +85,9 @@ class Calculator:
             logger.info(f"Evaluating expression: {current}")
 
             start = time.time()
-            # Simple approach
-            result = self.calc_logic.evaluate(current)
-        
-            # cloud microservice
-            """
-            try:
-                logger.debug(f"Sending request to {RAILWAY_URL}/calculate")
-                response = requests.post(f"{RAILWAY_URL}/calculate",
-                                     json={"expression": current})
-                logger.debug(f"Response status code: {response.status_code}")
-                result = response.json()["result"]
-                logger.info(f"Cloud result: {result}")
-            except Exception as e:
-                logger.error(f"Error calling cloud microservice: {e}")
-                result = "ERROR"
-            """
+            
+            result = self.get_output(current, method = 2)
+
             logger.info(f"Time taken for calculation: {time.time() - start}")
             logger.info(f"Request value: {result}")
             self.update_display(result)
