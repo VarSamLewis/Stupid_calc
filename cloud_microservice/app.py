@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
-from simpleeval import simple_eval
 
 app = Flask(__name__)
 CORS(app)
@@ -11,7 +10,7 @@ def evaluate(expression):
     if not expression:
         return "0"
     try:
-        result = simple_eval(expression)
+        result = eval(expression)
         if isinstance(result, float) and result.is_integer():
             return str(int(result))
         return str(result)
