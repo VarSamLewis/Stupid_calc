@@ -1,6 +1,6 @@
 import logging
 
-def setup_logging(level=logging.INFO):
+def setup_logging(level=logging.DEBUG):
     """
     Configure logging for the entire project
 

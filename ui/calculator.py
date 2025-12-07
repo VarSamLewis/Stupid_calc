@@ -9,6 +9,7 @@ import time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from simple_approach.calc_logic import CalculatorLogic
 from AI_Slop.LLM import Calclogic
+from rand_guess.calc_logic import RandCalcLogic
 from utils.logging_config import setup_logging
 
 setup_logging()
@@ -37,6 +38,7 @@ class Calculator:
         self.root.title("Calculator")
         self.calc_logic = CalculatorLogic()
         self.llm_calc_logic = Calclogic(GEMINI_API, MODEL_ID)
+        self.rand_calc_logic = RandCalcLogic()
         logger.debug("Calculation backends initialized")
 
         self.display = tk.Entry(root, width=20, font=('Arial', 20), justify='right')
@@ -108,6 +110,17 @@ class Calculator:
                 logger.error(f"Error calling LLM: {e}")
                 output = "ERROR"
             return output
+        elif method == 4:
+            logger.debug("Using random calculation")
+            try:
+                output, counter = self.rand_calc_logic.calculate(expression)
+                logger.info(f"Random calculation result: {output}, Guess count: {counter}")
+            except Exception as e:
+                logger.error(f"Error generatring random guess: {e}")
+                output = "ERROR"
+            return output
+        else: 
+            raise  ValueError("No method was called")
 
     def on_button_click(self, button):
         """
@@ -127,7 +140,7 @@ class Calculator:
             logger.info(f"Evaluating expression: {current}")
 
             start = time.time()
-            result = self.get_output(current, method=3)
+            result = self.get_output(current, method=4)
             elapsed = time.time() - start
 
             logger.info(f"Time taken for calculation: {elapsed:.4f}s")
