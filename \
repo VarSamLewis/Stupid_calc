@@ -5,39 +5,31 @@ from dotenv import load_dotenv
 import logging
 import requests
 import time
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from simple_approach.calc_logic import CalculatorLogic
 from AI_Slop.LLM import Calclogic
-from utils.logging_config import setup_logging
 
-setup_logging()
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 load_dotenv()
-GEMINI_API = os.getenv("GEMINI_API")
+GEMINI_API=os.getenv("GEMINI_API")
 MODEL_ID = "gemini-2.5-flash"
-RAILWAY_URL = os.getenv("RAILWAY_URL")
+RAILWAY_URL=os.getenv("RAILWAY_URL")
 logger.debug(f"Loaded RAILWAY_URL: {RAILWAY_URL}")
-logger.debug(f"Loaded MODEL_ID: {MODEL_ID}")
 
 
 class Calculator:
-    """Calculator UI using Tkinter with multiple calculation backends"""
-
     def __init__(self, root):
-        """
-        Initialize the calculator UI
-
-        Args:
-            root: Tkinter root window
-        """
         logger.debug("Initializing Calculator")
         self.root = root
         self.root.title("Calculator")
         self.calc_logic = CalculatorLogic()
-        self.llm_calc_logic = Calclogic(GEMINI_API, MODEL_ID)
-        logger.debug("Calculation backends initialized")
+        self.llm_calc_logic = Calclogic(GEMINI_API, )
 
         self.display = tk.Entry(root, width=20, font=('Arial', 20), justify='right')
         self.display.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
@@ -62,31 +54,16 @@ class Calculator:
 
         logger.info("Calculator initialized successfully")
 
-    def get_output(self, expression, method=1):
-        """
-        Get calculation output using specified method
 
-        Args:
-            expression: Mathematical expression to evaluate
-            method: Calculation method (1=local, 2=cloud, 3=LLM)
-
-        Returns:
-            str: Calculation result or "ERROR"
-        """
-        logger.debug(f"Getting output using method {method}")
-
+    def get_output(self, expression, method = 1):
         if method == 1:
-            logger.debug("Using local calculation logic")
             try:
                 output = self.calc_logic.evaluate(expression)
-                logger.info(f"Local calculation result: {output}")
             except Exception as e:
                 logger.error(f"Error calling local logic: {e}")
                 output = "ERROR"
             return output
-
         elif method == 2:
-            logger.debug("Using cloud microservice")
             try:
                 logger.debug(f"Sending request to {RAILWAY_URL}/calculate")
                 response = requests.post(f"{RAILWAY_URL}/calculate",
@@ -98,42 +75,31 @@ class Calculator:
                 logger.error(f"Error calling cloud microservice: {e}")
                 result = "ERROR"
             return result
-
         elif method == 3:
-            logger.debug("Using LLM calculation")
             try:
                 output = self.llm_calc_logic.genresponse(expression)
-                logger.info(f"LLM calculation result: {output}")
             except Exception as e:
-                logger.error(f"Error calling LLM: {e}")
-                output = "ERROR"
-            return output
+                result = "ERROR"
 
+
+    
     def on_button_click(self, button):
-        """
-        Handle button click events
-
-        Args:
-            button: The button value that was clicked
-        """
+        """Handle button clicks"""
         logger.debug(f"Button clicked: {button}")
-
         if button == 'C':
-            logger.debug("Clear button pressed")
+            logger.debug("Clearing display")
             self.clear_display()
-
         elif button == '=':
             current = self.display.get()
             logger.info(f"Evaluating expression: {current}")
 
             start = time.time()
-            result = self.get_output(current, method=3)
-            elapsed = time.time() - start
+            
+            result = self.get_output(current, method = 3)
 
-            logger.info(f"Time taken for calculation: {elapsed:.4f}s")
-            logger.info(f"Final result: {result}")
+            logger.info(f"Time taken for calculation: {time.time() - start}")
+            logger.info(f"Request value: {result}")
             self.update_display(result)
-
         else:
             logger.debug(f"Appending '{button}' to display")
             current = self.display.get()
@@ -141,28 +107,18 @@ class Calculator:
             self.display.insert(0, current + button)
 
     def update_display(self, value):
-        """
-        Update the display with a value
-
-        Args:
-            value: Value to display
-        """
+        """Update the display with a value"""
         logger.debug(f"Updating display with: {value}")
         self.display.delete(0, tk.END)
         self.display.insert(0, str(value))
 
     def clear_display(self):
-        """Clear the calculator display"""
+        """Clear the display"""
         logger.debug("Display cleared")
         self.display.delete(0, tk.END)
 
     def get_display(self):
-        """
-        Get current display value
-
-        Returns:
-            str: Current display contents
-        """
+        """Get current display value"""
         return self.display.get()
 
 
