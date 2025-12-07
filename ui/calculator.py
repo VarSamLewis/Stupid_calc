@@ -7,6 +7,7 @@ from simple_approach.calc_logic import CalculatorLogic
 
 
 
+
 class Calculator:
     def __init__(self, root):
         self.root = root
