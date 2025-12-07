@@ -13,7 +13,8 @@ def sanitise_input(expression):
 
     if all(char in allowed_chars for char in expression):
         return expression
-    else return ValueError("Invalid characters in input")
+    else:
+        return ValueError("Invalid characters in input")
     
 def evaluate(expression):
     """Evaluate a mathematical expression"""
