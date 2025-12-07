@@ -63,9 +63,10 @@ class Calculator:
 
             start = time.time()
             # Simple approach
-            #result = self.calc_logic.evaluate(current)
+            result = self.calc_logic.evaluate(current)
         
             # cloud microservice
+            """
             try:
                 logger.debug(f"Sending request to {RAILWAY_URL}/calculate")
                 response = requests.post(f"{RAILWAY_URL}/calculate",
@@ -76,7 +77,7 @@ class Calculator:
             except Exception as e:
                 logger.error(f"Error calling cloud microservice: {e}")
                 result = "ERROR"
-
+            """
             logger.info(f"Time taken for calculation: {time.time() - start}")
             logger.info(f"Request value: {result}")
             self.update_display(result)
