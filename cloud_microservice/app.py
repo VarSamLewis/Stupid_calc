@@ -5,12 +5,23 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+
+def sanitise_input(expression):
+    """Sanitise inputs"""
+
+    allowed_chars = set('0123456789+-*/')
+
+    if all(char in allowed_chars for char in expression):
+        return expression
+    else return ValueError("Invalid characters in input")
+    
 def evaluate(expression):
     """Evaluate a mathematical expression"""
     if not expression:
         return "0"
     try:
-        result = eval(expression)
+        safe_expression = sanitise_input(expression)
+        result = eval(safe_expression)
         if isinstance(result, float) and result.is_integer():
             return str(int(result))
         return str(result)
