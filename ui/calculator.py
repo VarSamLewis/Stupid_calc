@@ -1,15 +1,21 @@
 import tkinter as tk
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from simple_approach.calc_logic import CalculatorLogic
+
+
 
 class Calculator:
     def __init__(self, root):
         self.root = root
         self.root.title("Calculator")
+        self.calc_logic = CalculatorLogic()
 
-        # Display window
         self.display = tk.Entry(root, width=20, font=('Arial', 20), justify='right')
         self.display.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
-        # Button layout
         buttons = [
             '7', '8', '9', '/',
             '4', '5', '6', '*',
@@ -17,7 +23,6 @@ class Calculator:
             '0', 'C', '=', '+'
         ]
 
-        # Create buttons
         row = 1
         col = 0
         for button in buttons:
@@ -30,16 +35,14 @@ class Calculator:
                 row += 1
 
     def on_button_click(self, button):
-        """Handle button clicks - ADD YOUR BACKEND LOGIC HERE"""
+        """Handle button clicks"""
         if button == 'C':
             self.clear_display()
         elif button == '=':
-            # TODO: Add your calculation logic here
-            # Get current display value with: current = self.display.get()
-            # Set result with: self.update_display(result)
-            pass
+            current = self.display.get()
+            result = self.calc_logic.evaluate(current)
+            self.update_display(result)
         else:
-            # Number or operator button clicked
             current = self.display.get()
             self.display.delete(0, tk.END)
             self.display.insert(0, current + button)
