@@ -11,6 +11,7 @@ from simple_approach.calc_logic import CalculatorLogic
 from AI_Slop.LLM import Calclogic
 from rand_guess.calc_logic import RandCalcLogic
 from utils.logging_config import setup_logging
+from db_lookup.lookup import lookup
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -119,6 +120,15 @@ class Calculator:
                 logger.error(f"Error generatring random guess: {e}")
                 output = "ERROR"
             return output
+        elif method == 5:
+            logger.debug("Using db lookup")
+            try:
+                output = lookup(expression)
+                logger.info(f"DB lookup result: {output}")
+            except Exception as e:
+                logger.error(f"Error in db lookup: {e}")
+                output = "ERROR"
+            return output
         else: 
             raise  ValueError("No method was called")
 
@@ -140,7 +150,7 @@ class Calculator:
             logger.info(f"Evaluating expression: {current}")
 
             start = time.time()
-            result = self.get_output(current, method=4)
+            result = self.get_output(current, method=5)
             elapsed = time.time() - start
 
             logger.info(f"Time taken for calculation: {elapsed:.4f}s")
